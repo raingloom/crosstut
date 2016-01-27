@@ -9,11 +9,21 @@ set( Cross_VERSION_MAJOR 0 )
 set( Cross_VERSION_MINOR 1 )
 
 # config
-configure_file (
+configure_file(
 	"${PROJECT_SOURCE_DIR}/CrossConfig.h.in"
 	"${PROJECT_BINARY_DIR}/CrossConfig.h"
 )
 
-find_package( SDL  )
+
+# SDL finder stuff
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Cross_SOURCE_DIR}/sdl2-cmake" )
+
+find_package( SDL2 REQUIRED )
+find_package( SDL2_ttf REQUIRED )
+
+include_directories( SDL2_INCLUDE_DIR SDL2_ttf_INCLUDE_DIR )
+
+link_libraries( SDL2_LIBRARIES SDL2_ttf_LIBRARIES )
+
 
 include_directories( "${PROJECT_BINARY_DIR}" )
