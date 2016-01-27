@@ -13,12 +13,8 @@ int y = 0;
 SDL_Surface *screen;
 
 void main_quit();
-struct foo {
-	int x, y;
-};
+
 void main_loop() {
-	foo a;
-	a.
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
