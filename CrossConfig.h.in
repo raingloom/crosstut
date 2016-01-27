@@ -1,0 +1,2 @@
+#define Cross_VERSION_MAJOR @Cross_VERSION_MAJOR@
+#define Cross_VERSION_MINOR @Cross_VERSION_MINOR@
