@@ -23,7 +23,7 @@ find_package( SDL2_ttf REQUIRED )
 
 include_directories( SDL2_INCLUDE_DIR SDL2_ttf_INCLUDE_DIR )
 
-link_libraries( SDL2_LIBRARIES SDL2_ttf_LIBRARIES )
+link_libraries( SDL2_LIBRARY SDL2_ttf_LIBRARIES )
 
 
 include_directories( "${PROJECT_BINARY_DIR}" )
