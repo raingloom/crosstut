@@ -1,72 +1,52 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_ttf.h>
-#ifdef __EMSCRIPTEN__
-	#include <emscripten.h>
-#endif
-//CMake config
-#include "CrossConfig.h"
+#include <SDL2/SDL.h>
 
-int x = 0;
-int y = 0;
-SDL_Surface *screen;
+int main(int argc, char *argv[])
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+    SDL_Event event;
 
-void main_quit();
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't initialize SDL: %s", SDL_GetError());
+        return 3;
+    }
 
-void main_loop() {
-	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
-		switch (event.type) {
-			case SDL_KEYDOWN:
-				switch (event.key.keysym.sym) {
-						case SDLK_RIGHT: x++; break;
-						case SDLK_LEFT: x--; break;
-						case SDLK_UP: y--; break;
-						case SDLK_DOWN: y++; break;
-						default: printf("Other key"); break;
-				}
-			case SDL_QUIT: main_quit(); break;
-			default: printf("Event"); break;
-		}
-	}
+    if (SDL_CreateWindowAndRenderer(320, 240, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create window and renderer: %s", SDL_GetError());
+        return 3;
+    }
 
-	// Clears the screen
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255));
-	
-	// fill stuff
-	SDL_Rect rect = { x, y, 175, 125 };
-	SDL_FillRect(screen, &rect, SDL_MapRGBA(screen->format, 0x22, 0x22, 0xff, 0xff));
-	
+    surface = SDL_LoadBMP("assets/test.bmp");
+    if (!surface) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create surface from image: %s", SDL_GetError());
+        return 3;
+    }
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Couldn't create texture from surface: %s", SDL_GetError());
+        return 3;
+    }
+    SDL_FreeSurface(surface);
+
+    while (1) {
+        SDL_PollEvent(&event);
+        if (event.type == SDL_QUIT) {
+            break;
+        }
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+
+    SDL_Quit();
+
+    return 0;
 }
 
-int main(int argc, char **argv) {
-	/*
-	// include GL stuff, to check that we can compile hybrid 2d/GL apps
-	extern void glBegin(int mode);
-	extern void glBindBuffer(int target, int buffer);
-	if (argc == 9876) {
-		glBegin(0);
-		glBindBuffer(0, 0);
-	}
-	*/
-
-	// init main loop
-	SDL_Init(SDL_INIT_VIDEO);
-	screen = SDL_SetVideoMode(600, 450, 32, SDL_HWSURFACE);
-	
-	printf("TTF Init: %d\n", TTF_Init());
-	printf("Starting version %d.%d", Cross_VERSION_MAJOR, Cross_VERSION_MINOR);
-	#ifdef __EMSCRIPTEN__
-		emscripten_set_main_loop(main_loop, 30, 1);
-	#else
-		while (1) {
-			main_loop();
-		}
-	#endif
-	return 0;
-}
-
-void main_quit() {
-	SDL_Quit();
-}
