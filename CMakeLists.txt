@@ -1,4 +1,22 @@
+# if you wish to use a different compiler, set CC and CXX
+# these must be set *before* project()
+if (EMSCRIPTEN)
+    set(EMSCRIPTEN_TOOLS ${EMSCRIPTEN_HOME}/tools)
+    SET(CMAKE_C_COMPILER          "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_CXX_COMPILER        "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_LINKER              "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_CXX_LINKER          "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_C_LINK_EXECUTABLE   "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_CXX_LINK_EXECUTABLE "${EMSCRIPTEN_TOOLS}/emmaken.py")
+endif(EMSCRIPTEN)
+
 project( Cross )
+
+# these must be set *after* project()
+if (EMSCRIPTEN)
+    SET(CMAKE_AR                  "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_RANLIB              "${EMSCRIPTEN_TOOLS}/emmaken.py")
+endif(EMSCRIPTEN)
 
 add_executable( Cross Cross.cpp )
 
