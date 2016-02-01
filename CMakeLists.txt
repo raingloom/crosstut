@@ -21,10 +21,11 @@ endif(EMSCRIPTEN)
 
 if(EMSCRIPTEN)
 	set(EXEC_NAME "${PROJECT_NAME}.html")
-endif(EMSCRIPTEN)
-if(WINDOWS)
+elseif(WINDOWS)
 	set(EXEC_NAME "${PROJECT_NAME}.exe")
-endif(WINDOWS)
+else()
+	set(EXEC_NAME "${PROJECT_NAME}")
+endif(EMSCRIPTEN)
 
 add_executable(${EXEC_NAME} Cross.cpp)
 
@@ -35,7 +36,7 @@ set(${PROJECT_NAME}_VERSION_MAJOR 0)
 set(${PROJECT_NAME}_VERSION_MINOR 1)
 
 # don't clutter source and keep CMake stuff separate
-set_target_properties( Cross
+set_target_properties( ${EXEC_NAME}
     PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/out/lib"
 	LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/out/lib"
@@ -50,8 +51,9 @@ configure_file(
 include_directories( "${PROJECT_BINARY_DIR}" )
 
 
-# Escripten does not need the extra linking
-if(NOT EMSCRIPTEN)
+if(EMSCRIPTEN)
+	SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2")
+else()
 	# SDL finder stuff
 	set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Cross_SOURCE_DIR}/sdl2-cmake" )
 
