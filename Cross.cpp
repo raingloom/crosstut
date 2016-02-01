@@ -12,16 +12,14 @@ SDL_Event event;
 
 void main_loop()
 {
-    while (1) {
-        SDL_PollEvent(&event);
-        if (event.type == SDL_QUIT) {
-            break;
-        }
-        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
-        SDL_RenderPresent(renderer);
-    }
+	SDL_PollEvent(&event);
+	if (event.type == SDL_QUIT) {
+		SDL_Quit();
+	}
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+	SDL_RenderClear(renderer);
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
+	SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char *argv[])
@@ -49,7 +47,7 @@ int main(int argc, char *argv[])
     SDL_FreeSurface(surface);
 
 	#ifdef __EMSCRIPTEN__
-		emscripten_set_main_loop( main_loop, 0, 0 );
+		emscripten_set_main_loop( main_loop, -30, 0 );
 	#else
 		//TODO: proper framerate for native build
 		while(1)main_loop();
