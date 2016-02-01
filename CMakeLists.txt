@@ -1,22 +1,22 @@
-option( EMSCRIPTEN "Set this true if deploying to JS with emscripten" OFF )
+option(EMSCRIPTEN "Set this true if deploying to JS with emscripten" OFF)
 # if you wish to use a different compiler, set CC and CXX
 # these must be set *before* project()
-if (EMSCRIPTEN)
+if(EMSCRIPTEN)
     set(EMSCRIPTEN_TOOLS ${EMSCRIPTEN_HOME}/tools)
-    SET(CMAKE_C_COMPILER          "${EMSCRIPTEN_TOOLS}/emmaken.py")
-    SET(CMAKE_CXX_COMPILER        "${EMSCRIPTEN_TOOLS}/emmaken.py")
-    SET(CMAKE_LINKER              "${EMSCRIPTEN_TOOLS}/emmaken.py")
-    SET(CMAKE_CXX_LINKER          "${EMSCRIPTEN_TOOLS}/emmaken.py")
-    SET(CMAKE_C_LINK_EXECUTABLE   "${EMSCRIPTEN_TOOLS}/emmaken.py")
-    SET(CMAKE_CXX_LINK_EXECUTABLE "${EMSCRIPTEN_TOOLS}/emmaken.py")
+    SET(CMAKE_C_COMPILER          "emcc")
+    SET(CMAKE_CXX_COMPILER        "em++")
+    SET(CMAKE_LINKER              "emcc")
+    SET(CMAKE_CXX_LINKER          "em++")
+    SET(CMAKE_C_LINK_EXECUTABLE   "emcc")
+    SET(CMAKE_CXX_LINK_EXECUTABLE "em++")
 endif(EMSCRIPTEN)
 
 project( Cross )
 
 # these must be set *after* project()
-if (EMSCRIPTEN)
-    SET(CMAKE_AR                  "${EMSCRIPTEN_TOOLS}/emmaken.py")
-    SET(CMAKE_RANLIB              "${EMSCRIPTEN_TOOLS}/emmaken.py")
+if(EMSCRIPTEN)
+    SET(CMAKE_AR                  "emar")
+    SET(CMAKE_RANLIB              "emrunlib")
 endif(EMSCRIPTEN)
 
 if(EMSCRIPTEN)
@@ -50,14 +50,18 @@ configure_file(
 include_directories( "${PROJECT_BINARY_DIR}" )
 
 
-# SDL finder stuff
-set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Cross_SOURCE_DIR}/sdl2-cmake" )
+# Escripten does not need the extra linking
+if(NOT EMSCRIPTEN)
+	# SDL finder stuff
+	set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Cross_SOURCE_DIR}/sdl2-cmake" )
 
-find_package( SDL2 REQUIRED )
-#find_package( SDL2_ttf REQUIRED )
+	find_package( SDL2 REQUIRED )
+	#find_package( SDL2_ttf REQUIRED )
 
-include_directories( ${SDL2_INCLUDE_DIR} )# ${SDL2_ttf_INCLUDE_DIR} )
-message( "SDL2= ${SDL2_LIBRARY}" )
-target_link_libraries( ${EXEC_NAME} ${SDL2_LIBRARY} )# ${SDL2_ttf_LIBRARIES} )
+	include_directories( ${SDL2_INCLUDE_DIR} )# ${SDL2_ttf_INCLUDE_DIR} )
+	message( "SDL2= ${SDL2_LIBRARY}" )
+	target_link_libraries( ${EXEC_NAME} ${SDL2_LIBRARY} )# ${SDL2_ttf_LIBRARIES} )
+endif()
+
 
 file( COPY assets DESTINATION "${PROJECT_BINARY_DIR}/out/" )
